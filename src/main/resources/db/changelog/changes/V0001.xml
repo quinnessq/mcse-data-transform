@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.0.xsd">
+
+    <changeSet author="alcuin van zijl" id="v0001-1">
+        <createTable tableName="entry">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="date" type="DATETIME"/>
+            <column name="time" type="DECIMAL(20,4)"/>
+            <column name="malicious" type="BOOL" defaultValue="false"/>
+        </createTable>
+    </changeSet>
+
+
+    <changeSet author="alcuin van zijl" id="v0001-2">
+        <createTable tableName="remoteconnection">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="entryid" type="BIGINT"/>
+
+            <column name="remote_ip" type="VARCHAR(255)"/>
+            <column name="remote_port" type="VARCHAR(50)"/>
+            <column name="connection_id" type="VARCHAR(100)"/>
+            <column name="connection_time" type="DECIMAL(20,4)"/>
+        </createTable>
+
+        <addForeignKeyConstraint baseColumnNames="entryid"
+                                 baseTableName="remoteconnection"
+                                 constraintName="fk_remoteconnection_entry_id"
+                                 referencedColumnNames="id"
+                                 referencedTableName="entry"/>
+        <createIndex tableName="remoteconnection" indexName="remoteconnection_connection_id_idx">
+            <column name="connection_id"></column>
+        </createIndex>
+        <createIndex tableName="remoteconnection" indexName="remoteconnection_ip_port_idx">
+            <column name="remote_ip"></column>
+            <column name="remote_port"></column>
+        </createIndex>
+    </changeSet>
+
+
+    <changeSet author="alcuin van zijl" id="v0001-3">
+        <createTable tableName="request">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="entryid" type="BIGINT"/>
+
+            <column name="authenticated" type="BOOL"/>
+            <column name="request_length" type="BIGINT"/>
+            <column name="request_content_length" type="BIGINT"/>
+            <column name="request_content_type" type="VARCHAR(100)"/>
+            <column name="request_method" type="VARCHAR(10)"/>
+            <column name="request_uri" type="VARCHAR(3000)"/>
+            <column name="referrer" type="VARCHAR(3000)"/>
+            <column name="protocol" type="VARCHAR(10)"/>
+            <column name="user_agent" type="VARCHAR(3000)"/>
+        </createTable>
+        <addForeignKeyConstraint baseColumnNames="entryid"
+                                 baseTableName="request"
+                                 constraintName="fk_request_entry_id"
+                                 referencedColumnNames="id"
+                                 referencedTableName="entry"/>
+        <createIndex tableName="request" indexName="request_request_uri_idx">
+            <column name="request_uri" ></column>
+        </createIndex>
+    </changeSet>
+
+
+    <changeSet author="alcuin van zijl" id="v0001-4">
+        <createTable tableName="response">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="entryid" type="BIGINT"/>
+
+            <column name="response_body_size" type="BIGINT"/>
+            <column name="response_total_size" type="BIGINT"/>
+            <column name="response_status" type="BIGINT"/>
+            <column name="response_time" type="DECIMAL(20,4)"/>
+        </createTable>
+
+        <addForeignKeyConstraint baseColumnNames="entryid"
+                                 baseTableName="response"
+                                 constraintName="fk_response_entry_id"
+                                 referencedColumnNames="id"
+                                 referencedTableName="entry"/>
+        <createIndex tableName="response" indexName="response_response_time_idx">
+            <column name="response_time" ></column>
+        </createIndex>
+        <createIndex tableName="response" indexName="response_response_total_size_idx">
+            <column name="response_total_size" ></column>
+        </createIndex>
+    </changeSet>
+
+    <changeSet author="alcuin van zijl" id="v0001-5">
+        <createTable tableName="upstream">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="entryid" type="BIGINT"/>
+
+            <column name="upstream_connection_time" type="DECIMAL(20,4)"/>
+            <column name="upstream_response_length" type="BIGINT"/>
+            <column name="upstream_status" type="BIGINT"/>
+            <column name="upstream_response_time" type="DECIMAL(20,4)"/>
+        </createTable>
+
+        <addForeignKeyConstraint baseColumnNames="entryid"
+                                 baseTableName="upstream"
+                                 constraintName="fk_upstream_entry_id"
+                                 referencedColumnNames="id"
+                                 referencedTableName="entry"/>
+    </changeSet>
+    
+
+</databaseChangeLog>
